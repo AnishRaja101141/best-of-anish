@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechAI - Your AI Assistant</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #00ffaa;
+        --secondary-color: #0096ff;
+        --error-color: #ff5555;
+        --bg-color: #0a0a0a;
+        --panel-color: rgba(10, 20, 30, 0.9);
+        --text-color: #ffffff;
+        --border-color: rgba(0, 255, 170, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto Mono", monospace;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        background-image: radial-gradient(
+            circle at 10% 20%,
+            rgba(0, 255, 170, 0.05) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(0, 200, 255, 0.05) 0%,
+            transparent 20%
+          );
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .cyber-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        transition: opacity 1s ease-out;
+      }
+
+      .loader-text {
+        font-family: "Orbitron", sans-serif;
+        color: var(--primary-color);
+        margin-top: 20px;
+        text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        letter-spacing: 2px;
+      }
+
+      .circuit-line {
+        height: 2px;
+        width: 300px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--primary-color),
+          transparent
+        );
+        margin: 20px 0;
+        position: relative;
+      }
+
+      .circuit-line::before,
+      .circuit-line::after {
+        content: "";
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        top: -3px;
+      }
+
+      .circuit-line::before {
+        left: 20%;
+      }
+
+      .circuit-line::after {
+        right: 20%;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 1s ease;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        font-family: "Orbitron", sans-serif;
+        font-size: 2rem;
+        color: var(--primary-color);
+        text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo .tech-icon {
+        font-size: 1.5em;
+      }
+
+      .ai-panel {
+        background-color: var(--panel-color);
+        border-radius: 8px;
+        padding: 30px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+        backdrop-filter: blur(5px);
+        margin-bottom: 30px;
+      }
+
+      .chat-container {
+        height: 500px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding-right: 10px;
+      }
+
+      .message {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .message-user {
+        align-items: flex-end;
+      }
+
+      .message-ai {
+        align-items: flex-start;
+      }
+
+      .message-bubble {
+        max-width: 80%;
+        padding: 15px;
+        border-radius: 8px;
+        position: relative;
+        margin-bottom: 5px;
+      }
+
+      .user-bubble {
+        background-color: rgba(0, 150, 255, 0.2);
+        border: 1px solid var(--secondary-color);
+        color: var(--text-color);
+      }
+
+      .ai-bubble {
+        background-color: rgba(0, 255, 170, 0.1);
+        border: 1px solid var(--primary-color);
+        color: var(--text-color);
+      }
+
+      .message-meta {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .input-area {
+        display: flex;
+        gap: 10px;
+      }
+
+      .tech-input {
+        flex-grow: 1;
+        padding: 15px;
+        background: rgba(0, 20, 15, 0.5);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-color);
+        font-family: "Roboto Mono", monospace;
+        font-size: 16px;
+      }
+
+      .tech-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+      }
+
+      .tech-button {
+        background: rgba(0, 255, 170, 0.1);
+        color: var(--primary-color);
+        padding: 15px 25px;
+        border: 1px solid var(--primary-color);
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Roboto Mono", monospace;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.5px;
+      }
+
+      .tech-button:hover {
+        background: rgba(0, 255, 170, 0.2);
+        box-shadow: 0 0 15px rgba(0, 255, 170, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--primary-color);
+        border-radius: 50%;
+        animation: typingAnimation 1.4s infinite ease-in-out;
+      }
+
+      .typing-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typingAnimation {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 40px;
+      }
+
+      .feature-card {
+        background-color: var(--panel-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 255, 170, 0.1);
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+      }
+
+      .feature-title {
+        font-family: "Orbitron", sans-serif;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+      }
+
+      footer {
+        text-align: center;
+        padding: 30px 0;
+        margin-top: 50px;
+        border-top: 1px solid var(--border-color);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 8px;
+        height: 16px;
+        background-color: var(--primary-color);
+        animation: blink 1s infinite;
+        vertical-align: middle;
+        margin-left: 2px;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .logo {
+          font-size: 1.5rem;
+        }
+
+        .ai-panel {
+          padding: 20px;
+        }
+
+        .input-area {
+          flex-direction: column;
+        }
+
+        .tech-button {
+          justify-content: center;
+        }
+      }
+
+      /* Matrix rain effect */
+      .matrix-rain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading screen -->
+    <div class="cyber-loader" id="loader">
+      <div class="circuit-line"></div>
+      <div class="loader-text">INITIALIZING TECH-AI SYSTEM</div>
+      <div class="circuit-line"></div>
+    </div>
+
+    <!-- Matrix rain background -->
+    <canvas class="matrix-rain" id="matrixCanvas"></canvas>
+
+    <!-- Main content -->
+    <div class="container" id="mainContent">
+      <header>
+        <div class="logo"><span class="tech-icon">⚡</span> TechAI</div>
+        <div class="tech-button" id="voiceToggle">
+          <span class="tech-icon">🔊</span> VOICE: ON
+        </div>
+      </header>
+
+      <main>
+        <div class="ai-panel">
+          <h2 class="feature-title">AI ASSISTANT CONSOLE</h2>
+          <div class="circuit-line"></div>
+
+          <div class="chat-container" id="chatContainer">
+            <!-- Messages will appear here -->
+          </div>
+
+          <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+
+          <div class="input-area">
+            <input
+              type="text"
+              class="tech-input"
+              id="userInput"
+              placeholder="Ask me anything..."
+            />
+            <button class="tech-button" id="sendButton">
+              <span class="tech-icon">⏎</span> SEND
+            </button>
+          </div>
+        </div>
+
+        <div class="features">
+          <div class="feature-card">
+            <div class="feature-icon">💡</div>
+            <h3 class="feature-title">SMART RESPONSES</h3>
+            <p>
+              Get intelligent answers to your questions with our simulated AI
+              technology.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⌨️</div>
+            <h3 class="feature-title">TYPING EFFECT</h3>
+            <p>
+              Watch responses appear character by character for a realistic chat
+              experience.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔊</div>
+            <h3 class="feature-title">VOICE INTERACTION</h3>
+            <p>
+              Hear responses spoken aloud with natural-sounding text-to-speech
+              technology.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      <footer>© 2023 TechAI Systems | Simulated AI Experience</footer>
+    </div>
+
+    <script>
+      // Loading screen and greeting
+      window.addEventListener("load", function () {
+        speak("Hello buddy! ");
+        addAIMessage("ask any question to prove my knowlage");
+
+        setTimeout(function () {
+          document.getElementById("loader").style.opacity = "0";
+          document.getElementById("mainContent").style.opacity = "1";
+          document.getElementById("mainContent").style.transform =
+            "translateY(0)";
+          setTimeout(
+            () => (document.getElementById("loader").style.display = "none"),
+            1000
+          );
+        }, 2000);
+      });
+
+      // [Matrix rain effect code remains the same]
+
+      // Web Search API endpoint (free alternative)
+      async function searchWeb(query) {
+        try {
+          // Using a free search API (replace with your preferred service)
+          const response = await fetch(
+            `https://api.searchapi.io/v1/search?q=${encodeURIComponent(
+              query
+            )}&api_key=YOUR_FREE_API_KEY`
+          );
+          const data = await response.json();
+
+          // Extract the most relevant result
+          if (data.organic_results && data.organic_results.length > 0) {
+            return (
+              data.organic_results[0].snippet ||
+              "I found information but couldn't extract a clear answer."
+            );
+          }
+          return "No results found for your query.";
+        } catch (error) {
+          console.error("Search error:", error);
+          return "Sorry, I encountered an error while searching.";
+        }
+      }
+
+      // Generate AI response with real web search
+      async function generateAIResponse(userInput) {
+        typingIndicator.style.opacity = "1";
+
+        try {
+          const searchResult = await searchWeb(userInput);
+          typingIndicator.style.opacity = "0";
+          addAIMessage(`From my web search: ${searchResult}`);
+        } catch (error) {
+          typingIndicator.style.opacity = "0";
+          addAIMessage("Failed to fetch web results. Please try again later.");
+        }
+      }
+
+      // [Rest of the JavaScript remains the same, including typing effects, voice, etc.]
+
+      // Matrix rain effect
+      const canvas = document.getElementById("matrixCanvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const katakana =
+        "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
+      const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const nums = "0123456789";
+
+      const alphabet = katakana + latin + nums;
+
+      const fontSize = 16;
+      const columns = canvas.width / fontSize;
+
+      const rainDrops = [];
+
+      for (let x = 0; x < columns; x++) {
+        rainDrops[x] = 1;
+      }
+
+      const draw = () => {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#00ffaa";
+        ctx.font = fontSize + "px monospace";
+
+        for (let i = 0; i < rainDrops.length; i++) {
+          const text = alphabet.charAt(
+            Math.floor(Math.random() * alphabet.length)
+          );
+          ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+          if (
+            rainDrops[i] * fontSize > canvas.height &&
+            Math.random() > 0.975
+          ) {
+            rainDrops[i] = 0;
+          }
+          rainDrops[i]++;
+        }
+      };
+
+      setInterval(draw, 30);
+
+      // Chat functionality
+      const chatContainer = document.getElementById("chatContainer");
+      const userInput = document.getElementById("userInput");
+      const sendButton = document.getElementById("sendButton");
+      const typingIndicator = document.getElementById("typingIndicator");
+      const voiceToggle = document.getElementById("voiceToggle");
+
+      let voiceEnabled = true;
+      let isTyping = false;
+
+      // Knowledge base for simulated responses
+      const knowledgeBase = {
+        hello: "Hello there! How can I assist you today?",
+        hi: "Hi! What would you like to know?",
+        "how are you":
+          "I'm just a simulated AI, but I'm functioning optimally! How can I help you?",
+        "what can you do":
+          "I can answer questions, provide information, and have conversations on various topics. Try asking me anything!",
+        "who created you":
+          "I was created by a developer anish raja as a simulated AI experience using HTML, CSS, and JavaScript.",
+        "what is your name":
+          "I'm TechAI, your simulated artificial intelligence assistant!",
+        "thank you": "You're welcome! Is there anything else I can help with?",
+        goodbye: "Goodbye! Feel free to return if you have more questions.",
+        default:
+          "That's an interesting question. As a simulated AI, I don't have real-time internet access, but I can discuss many topics based on my programming.",
+      };
+
+      // Add message to chat
+      function addMessage(text, isUser) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message message-${isUser ? "user" : "ai"}`;
+
+        const bubbleDiv = document.createElement("div");
+        bubbleDiv.className = `message-bubble ${
+          isUser ? "user-bubble" : "ai-bubble"
+        }`;
+        bubbleDiv.textContent = text;
+
+        const metaDiv = document.createElement("div");
+        metaDiv.className = "message-meta";
+        metaDiv.textContent = isUser ? "You" : "TechAI";
+
+        messageDiv.appendChild(bubbleDiv);
+        messageDiv.appendChild(metaDiv);
+
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      function addUserMessage(text) {
+        addMessage(text, true);
+      }
+
+      function addAIMessage(text) {
+        // Create message container
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message message-ai";
+
+        // Create bubble with cursor
+        const bubbleDiv = document.createElement("div");
+        bubbleDiv.className = "message-bubble ai-bubble";
+
+        // Create meta info
+        const metaDiv = document.createElement("div");
+        metaDiv.className = "message-meta";
+        metaDiv.textContent = "TechAI";
+
+        messageDiv.appendChild(bubbleDiv);
+        messageDiv.appendChild(metaDiv);
+        chatContainer.appendChild(messageDiv);
+
+        // Type out the message
+        typeMessage(bubbleDiv, text);
+
+        // Scroll to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      // Type message with typing effect
+      function typeMessage(element, text) {
+        isTyping = true;
+        let i = 0;
+        const speed = 20; // typing speed in milliseconds
+
+        function typing() {
+          if (i < text.length) {
+            element.innerHTML =
+              text.substring(0, i + 1) + '<span class="cursor"></span>';
+            i++;
+            setTimeout(typing, speed);
+          } else {
+            element.innerHTML = text; // Remove cursor when done
+            isTyping = false;
+
+            // Speak the message if voice is enabled
+            if (voiceEnabled) {
+              speak(text);
+            }
+          }
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        typing();
+      }
+
+      // Text-to-speech
+      function speak(text) {
+        if (!voiceEnabled || isTyping) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = speechSynthesis
+          .getVoices()
+          .find(
+            (voice) =>
+              voice.name.includes("Google US English") ||
+              voice.name.includes("English")
+          );
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        speechSynthesis.speak(utterance);
+      }
+
+      // Generate simulated AI response
+      function generateAIResponse(userInput) {
+        // Show typing indicator
+        typingIndicator.style.opacity = "1";
+
+        // Simulate AI processing time
+        setTimeout(() => {
+          typingIndicator.style.opacity = "0";
+
+          const lowerInput = userInput.toLowerCase();
+          let response = knowledgeBase["default"];
+
+          // Check for matching questions
+          for (const [question, answer] of Object.entries(knowledgeBase)) {
+            if (lowerInput.includes(question)) {
+              response = answer;
+              break;
+            }
+          }
+
+          // Add response to chat with typing effect
+          addAIMessage(response);
+        }, 1000 + Math.random() * 1500);
+      }
+
+      // Handle user input
+      function handleUserInput() {
+        const text = userInput.value.trim();
+        if (text) {
+          addUserMessage(text);
+          userInput.value = "";
+          generateAIResponse(text);
+        }
+      }
+
+      // Event listeners
+      sendButton.addEventListener("click", handleUserInput);
+
+      userInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          handleUserInput();
+        }
+      });
+
+      voiceToggle.addEventListener("click", function () {
+        voiceEnabled = !voiceEnabled;
+        this.innerHTML = `<span class="tech-icon">${
+          voiceEnabled ? "🔊" : "🔇"
+        }</span> VOICE: ${voiceEnabled ? "ON" : "OFF"}`;
+      });
+
+      // Initialize speech synthesis
+      if ("speechSynthesis" in window) {
+        // Chrome needs voices to be loaded
+        speechSynthesis.onvoiceschanged = function () {
+          // Voices are now loaded
+        };
+      } else {
+        voiceToggle.style.display = "none";
+        addAIMessage(
+          "Note: Your browser doesn't support text-to-speech functionality."
+        );
+      }
+
+      // Responsive canvas
+      window.addEventListener("resize", function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    </script>
+  </body>
+</html>
