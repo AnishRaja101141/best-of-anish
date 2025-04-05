@@ -331,6 +331,70 @@
         }
       }
 
+      /* History panel styles */
+      .history-panel {
+        background-color: var(--panel-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .history-title {
+        font-family: "Orbitron", sans-serif;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .history-list {
+        list-style-type: none;
+      }
+
+      .history-item {
+        padding: 10px;
+        margin-bottom: 8px;
+        background: rgba(0, 255, 170, 0.05);
+        border-left: 3px solid var(--primary-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .history-item:hover {
+        background: rgba(0, 255, 170, 0.15);
+        transform: translateX(5px);
+      }
+
+      .history-item-time {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 3px;
+      }
+
+      .clear-history {
+        background: none;
+        border: none;
+        color: var(--error-color);
+        cursor: pointer;
+        font-family: "Roboto Mono", monospace;
+        font-size: 0.8rem;
+      }
+
+      .clear-history:hover {
+        text-decoration: underline;
+      }
+
+      /* Layout adjustments */
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 20px;
+      }
+
       @media (max-width: 768px) {
         .container {
           padding: 15px;
@@ -351,6 +415,14 @@
         .tech-button {
           justify-content: center;
         }
+
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+
+        .history-panel {
+          max-height: 200px;
+        }
       }
 
       /* Matrix rain effect */
@@ -362,6 +434,17 @@
         height: 100%;
         z-index: -1;
         opacity: 0.1;
+      }
+
+      .wikipedia-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--primary-color);
+      }
+
+      .wikipedia-link:hover {
+        color: var(--secondary-color);
+        border-bottom-color: var(--secondary-color);
       }
     </style>
   </head>
@@ -386,69 +469,86 @@
       </header>
 
       <main>
-        <div class="ai-panel">
-          <h2 class="feature-title">AI ASSISTANT CONSOLE</h2>
-          <div class="circuit-line"></div>
+        <div class="main-content">
+          <div>
+            <div class="ai-panel">
+              <h2 class="feature-title">AI ASSISTANT CONSOLE</h2>
+              <div class="circuit-line"></div>
 
-          <div class="chat-container" id="chatContainer">
-            <!-- Messages will appear here -->
+              <div class="chat-container" id="chatContainer">
+                <!-- Messages will appear here -->
+              </div>
+
+              <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+
+              <div class="input-area">
+                <input
+                  type="text"
+                  class="tech-input"
+                  id="userInput"
+                  placeholder="Ask me anything..."
+                />
+                <button class="tech-button" id="sendButton">
+                  <span class="tech-icon">⏎</span> SEND
+                </button>
+              </div>
+            </div>
+
+            <div class="features">
+              <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3 class="feature-title">WIKIPEDIA SEARCH</h3>
+                <p>
+                  Get answers from Wikipedia's vast knowledge base for accurate
+                  and reliable information.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">⌨️</div>
+                <h3 class="feature-title">TYPING EFFECT</h3>
+                <p>
+                  Watch responses appear character by character for a realistic
+                  chat experience.
+                </p>
+              </div>
+              <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <h3 class="feature-title">VOICE INTERACTION</h3>
+                <p>
+                  Hear responses spoken aloud with natural-sounding
+                  text-to-speech technology.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div class="typing-indicator" id="typingIndicator">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-          </div>
-
-          <div class="input-area">
-            <input
-              type="text"
-              class="tech-input"
-              id="userInput"
-              placeholder="Ask me anything..."
-            />
-            <button class="tech-button" id="sendButton">
-              <span class="tech-icon">⏎</span> SEND
-            </button>
-          </div>
-        </div>
-
-        <div class="features">
-          <div class="feature-card">
-            <div class="feature-icon">💡</div>
-            <h3 class="feature-title">SMART RESPONSES</h3>
-            <p>
-              Get intelligent answers to your questions with our simulated AI
-              technology.
-            </p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">⌨️</div>
-            <h3 class="feature-title">TYPING EFFECT</h3>
-            <p>
-              Watch responses appear character by character for a realistic chat
-              experience.
-            </p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔊</div>
-            <h3 class="feature-title">VOICE INTERACTION</h3>
-            <p>
-              Hear responses spoken aloud with natural-sounding text-to-speech
-              technology.
-            </p>
+          <div class="history-panel">
+            <h3 class="history-title">
+              SEARCH HISTORY
+              <button class="clear-history" id="clearHistory">Clear All</button>
+            </h3>
+            <ul class="history-list" id="historyList">
+              <!-- History items will appear here -->
+            </ul>
           </div>
         </div>
       </main>
 
-      <footer>© 2023 TechAI Systems | Simulated AI Experience</footer>
+      <footer>© 2023 TechAI Systems | Powered by Wikipedia API</footer>
     </div>
 
     <script>
       // Loading screen and greeting
       window.addEventListener("load", function () {
         speak("Hello buddy! ");
-        addAIMessage("ask any question to prove my knowlage");
+        addAIMessage("I can search Wikipedia for you. Ask me anything!");
+
+        // Load history from localStorage
+        loadHistory();
 
         setTimeout(function () {
           document.getElementById("loader").style.opacity = "0";
@@ -461,49 +561,6 @@
           );
         }, 2000);
       });
-
-      // [Matrix rain effect code remains the same]
-
-      // Web Search API endpoint (free alternative)
-      async function searchWeb(query) {
-        try {
-          // Using a free search API (replace with your preferred service)
-          const response = await fetch(
-            `https://api.searchapi.io/v1/search?q=${encodeURIComponent(
-              query
-            )}&api_key=YOUR_FREE_API_KEY`
-          );
-          const data = await response.json();
-
-          // Extract the most relevant result
-          if (data.organic_results && data.organic_results.length > 0) {
-            return (
-              data.organic_results[0].snippet ||
-              "I found information but couldn't extract a clear answer."
-            );
-          }
-          return "No results found for your query.";
-        } catch (error) {
-          console.error("Search error:", error);
-          return "Sorry, I encountered an error while searching.";
-        }
-      }
-
-      // Generate AI response with real web search
-      async function generateAIResponse(userInput) {
-        typingIndicator.style.opacity = "1";
-
-        try {
-          const searchResult = await searchWeb(userInput);
-          typingIndicator.style.opacity = "0";
-          addAIMessage(`From my web search: ${searchResult}`);
-        } catch (error) {
-          typingIndicator.style.opacity = "0";
-          addAIMessage("Failed to fetch web results. Please try again later.");
-        }
-      }
-
-      // [Rest of the JavaScript remains the same, including typing effects, voice, etc.]
 
       // Matrix rain effect
       const canvas = document.getElementById("matrixCanvas");
@@ -559,26 +616,30 @@
       const sendButton = document.getElementById("sendButton");
       const typingIndicator = document.getElementById("typingIndicator");
       const voiceToggle = document.getElementById("voiceToggle");
+      const historyList = document.getElementById("historyList");
+      const clearHistoryBtn = document.getElementById("clearHistory");
 
       let voiceEnabled = true;
       let isTyping = false;
+      let searchHistory = [];
 
       // Knowledge base for simulated responses
       const knowledgeBase = {
         hello: "Hello there! How can I assist you today?",
-        hi: "Hi! What would you like to know?",
+        hi: "Hi! What would you like to know? You can ask me to search Wikipedia for any topic.",
         "how are you":
-          "I'm just a simulated AI, but I'm functioning optimally! How can I help you?",
+          "I'm just a program, but I'm functioning well! How can I help you today?",
         "what can you do":
-          "I can answer questions, provide information, and have conversations on various topics. Try asking me anything!",
+          "I can search Wikipedia for information on almost any topic. Try asking me about historical events, scientific concepts, famous people, or anything else!",
         "who created you":
-          "I was created by a developer anish raja as a simulated AI experience using HTML, CSS, and JavaScript.",
+          "I was created by a developer as a Wikipedia-powered AI assistant using HTML, CSS, and JavaScript.",
         "what is your name":
-          "I'm TechAI, your simulated artificial intelligence assistant!",
-        "thank you": "You're welcome! Is there anything else I can help with?",
+          "I'm TechAI, your Wikipedia-powered artificial intelligence assistant!",
+        "thank you":
+          "You're welcome! Is there anything else I can look up for you?",
         goodbye: "Goodbye! Feel free to return if you have more questions.",
         default:
-          "That's an interesting question. As a simulated AI, I don't have real-time internet access, but I can discuss many topics based on my programming.",
+          "I can search Wikipedia for information about that. Would you like me to look it up?",
       };
 
       // Add message to chat
@@ -590,7 +651,13 @@
         bubbleDiv.className = `message-bubble ${
           isUser ? "user-bubble" : "ai-bubble"
         }`;
-        bubbleDiv.textContent = text;
+
+        // Check if text contains HTML (like links)
+        if (/<[a-z][\s\S]*>/i.test(text)) {
+          bubbleDiv.innerHTML = text;
+        } else {
+          bubbleDiv.textContent = text;
+        }
 
         const metaDiv = document.createElement("div");
         metaDiv.className = "message-meta";
@@ -640,9 +707,22 @@
 
         function typing() {
           if (i < text.length) {
-            element.innerHTML =
-              text.substring(0, i + 1) + '<span class="cursor"></span>';
-            i++;
+            // Handle HTML tags in the text
+            if (text.substring(i, i + 1) === "<") {
+              // Find the closing tag
+              const closingIndex = text.indexOf(">", i);
+              if (closingIndex !== -1) {
+                // Insert the whole tag at once
+                element.innerHTML =
+                  text.substring(0, closingIndex + 1) +
+                  '<span class="cursor"></span>';
+                i = closingIndex + 1;
+              }
+            } else {
+              element.innerHTML =
+                text.substring(0, i + 1) + '<span class="cursor"></span>';
+              i++;
+            }
             setTimeout(typing, speed);
           } else {
             element.innerHTML = text; // Remove cursor when done
@@ -650,7 +730,9 @@
 
             // Speak the message if voice is enabled
             if (voiceEnabled) {
-              speak(text);
+              // Remove HTML tags from text before speaking
+              const textToSpeak = text.replace(/<[^>]*>/g, "");
+              speak(textToSpeak);
             }
           }
           chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -676,29 +758,76 @@
         speechSynthesis.speak(utterance);
       }
 
-      // Generate simulated AI response
-      function generateAIResponse(userInput) {
+      // Search Wikipedia API
+      async function searchWikipedia(query) {
+        try {
+          // Using Wikipedia's API
+          const response = await fetch(
+            `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=${encodeURIComponent(
+              query
+            )}&origin=*`
+          );
+          const data = await response.json();
+
+          if (data.query && data.query.search && data.query.search.length > 0) {
+            // Get the first result's page content
+            const pageId = data.query.search[0].pageid;
+            const contentResponse = await fetch(
+              `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts|info&exintro&explaintext&inprop=url&pageids=${pageId}&origin=*`
+            );
+            const contentData = await contentResponse.json();
+
+            const page = contentData.query.pages[pageId];
+            const extract = page.extract || "No extract available.";
+            const url =
+              page.fullurl || `https://en.wikipedia.org/?curid=${pageId}`;
+
+            // Format the response with a link
+            const formattedExtract =
+              extract.length > 500
+                ? extract.substring(0, 500) + "..."
+                : extract;
+
+            return `${formattedExtract}<br><br><a href="${url}" target="_blank" class="wikipedia-link">Read more on Wikipedia</a>`;
+          } else {
+            return "No Wikipedia results found for your query. Try being more specific or check your spelling.";
+          }
+        } catch (error) {
+          console.error("Wikipedia search error:", error);
+          return "Sorry, I encountered an error while searching Wikipedia. Please try again later.";
+        }
+      }
+
+      // Generate AI response with Wikipedia search
+      async function generateAIResponse(userInput) {
         // Show typing indicator
         typingIndicator.style.opacity = "1";
 
-        // Simulate AI processing time
-        setTimeout(() => {
-          typingIndicator.style.opacity = "0";
+        const lowerInput = userInput.toLowerCase();
+        let response = knowledgeBase["default"];
 
-          const lowerInput = userInput.toLowerCase();
-          let response = knowledgeBase["default"];
-
-          // Check for matching questions
-          for (const [question, answer] of Object.entries(knowledgeBase)) {
-            if (lowerInput.includes(question)) {
-              response = answer;
-              break;
-            }
+        // Check for matching questions in knowledge base
+        for (const [question, answer] of Object.entries(knowledgeBase)) {
+          if (lowerInput.includes(question)) {
+            response = answer;
+            break;
           }
+        }
 
-          // Add response to chat with typing effect
-          addAIMessage(response);
-        }, 1000 + Math.random() * 1500);
+        // If it's not a basic question, search Wikipedia
+        if (response === knowledgeBase["default"]) {
+          // Add to history
+          addToHistory(userInput);
+
+          const searchResult = await searchWikipedia(userInput);
+          typingIndicator.style.opacity = "0";
+          addAIMessage(searchResult);
+          return;
+        }
+
+        // For basic questions, just respond
+        typingIndicator.style.opacity = "0";
+        addAIMessage(response);
       }
 
       // Handle user input
@@ -709,6 +838,72 @@
           userInput.value = "";
           generateAIResponse(text);
         }
+      }
+
+      // Add search to history
+      function addToHistory(query) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        const historyItem = {
+          query: query,
+          timestamp: now.getTime(),
+          timeString: timeString,
+        };
+
+        // Add to beginning of array (most recent first)
+        searchHistory.unshift(historyItem);
+
+        // Keep only the last 20 items
+        if (searchHistory.length > 20) {
+          searchHistory.pop();
+        }
+
+        // Update localStorage
+        localStorage.setItem("techAIHistory", JSON.stringify(searchHistory));
+
+        // Update UI
+        renderHistory();
+      }
+
+      // Load history from localStorage
+      function loadHistory() {
+        const savedHistory = localStorage.getItem("techAIHistory");
+        if (savedHistory) {
+          searchHistory = JSON.parse(savedHistory);
+          renderHistory();
+        }
+      }
+
+      // Render history list
+      function renderHistory() {
+        historyList.innerHTML = "";
+
+        searchHistory.forEach((item, index) => {
+          const li = document.createElement("li");
+          li.className = "history-item";
+          li.innerHTML = `
+            <div>${item.query}</div>
+            <div class="history-item-time">${item.timeString}</div>
+          `;
+
+          li.addEventListener("click", () => {
+            userInput.value = item.query;
+            userInput.focus();
+          });
+
+          historyList.appendChild(li);
+        });
+      }
+
+      // Clear history
+      function clearHistory() {
+        searchHistory = [];
+        localStorage.removeItem("techAIHistory");
+        renderHistory();
       }
 
       // Event listeners
@@ -726,6 +921,8 @@
           voiceEnabled ? "🔊" : "🔇"
         }</span> VOICE: ${voiceEnabled ? "ON" : "OFF"}`;
       });
+
+      clearHistoryBtn.addEventListener("click", clearHistory);
 
       // Initialize speech synthesis
       if ("speechSynthesis" in window) {
